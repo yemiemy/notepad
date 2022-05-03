@@ -10,16 +10,15 @@ const NotePage = (props) => {
     // let note = notes.find(note => note.id === Number(id))
 
     useEffect(() => {
+        let getNote = async () => {
+            if (id === 'new') return
+    
+            let response = await fetch(`http://localhost:8000/notes/${id}`)
+            let data = await response.json()
+            setNote(data)
+        }
         getNote()
     }, [id])
-
-    let getNote = async () => {
-        if (id === 'new') return
-
-        let response = await fetch(`http://localhost:8000/notes/${id}`)
-        let data = await response.json()
-        setNote(data)
-    }
 
     let createNote = async () => {
         await fetch(`http://localhost:8000/notes`, {

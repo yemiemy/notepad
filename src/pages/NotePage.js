@@ -18,7 +18,7 @@ const NotePage = (props) => {
                 method: 'GET',
                  headers: {
                    'Content-Type':'application/json',
-                   'Authorization':'Bearer ' + String(authTokens?.access)
+                   'Authorization':'Token ' + String(authTokens?.auth_token)
                  }
             })
             let data = await response.json()
@@ -51,7 +51,7 @@ const NotePage = (props) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization':'Bearer ' + String(authTokens?.access)
+                'Authorization':'Token ' + String(authTokens?.auth_token)
             },
             body: JSON.stringify({...note})
         })
@@ -64,7 +64,7 @@ const NotePage = (props) => {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization':'Bearer ' + String(authTokens?.access)
+                'Authorization':'Token ' + String(authTokens?.auth_token)
             },
             body: JSON.stringify({...note, 'updated': new Date()})
         })
@@ -77,7 +77,7 @@ const NotePage = (props) => {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization':'Bearer ' + String(authTokens?.access)
+                'Authorization':'Token ' + String(authTokens?.auth_token)
             },
             body: JSON.stringify(note)
         })

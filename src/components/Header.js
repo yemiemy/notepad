@@ -12,7 +12,7 @@ const Header = () => {
       setUser(null)
     }else{
       let getUserDetails = async () => {
-        let response = await fetch('http://127.0.0.1:8000/auth/users/me/', {
+        let response = await fetch('https://notepad-be.herokuapp.com/auth/users/me/', {
           method: 'GET',
           headers: {
               'Content-Type': 'application/json',

@@ -16,7 +16,7 @@ export const AuthProvider = ({children}) => {
 
     let registerUser = async (e) => {
         e.preventDefault()
-        let response = await fetch('/auth/users/', {
+        let response = await fetch('https://notepad-be.herokuapp.com/auth/users/', {
             method: 'POST',
             headers: {
                 'Content-Type':'application/json'
@@ -35,7 +35,7 @@ export const AuthProvider = ({children}) => {
 
     let loginUser = async (e) => {
         e.preventDefault()
-        let response = await fetch('/auth/jwt/create/', {
+        let response = await fetch('https://notepad-be.herokuapp.com/auth/jwt/create/', {
             method: 'POST',
             headers: {
                 'Content-Type':'application/json'
@@ -65,7 +65,7 @@ export const AuthProvider = ({children}) => {
 
     let updateToken = async () => {
 
-        let response = await fetch('/auth/jwt/refresh/', {
+        let response = await fetch('https://notepad-be.herokuapp.com/auth/jwt/refresh/', {
             method: 'POST',
             headers: {
                 'Content-Type':'application/json'

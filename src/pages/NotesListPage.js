@@ -9,7 +9,7 @@ const NotesListPage = () => {
 
   useEffect(() => {
     let getNotes = async () => {
-      let response = await fetch('/api/notes/', {
+      let response = await fetch('https://notepad-be.herokuapp.com/api/notes/', {
         method: 'GET',
          headers: {
            'Content-Type':'application/json',

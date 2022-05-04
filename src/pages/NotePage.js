@@ -14,7 +14,7 @@ const NotePage = (props) => {
         let getNote = async () => {
             if (id === 'new') return
     
-            let response = await fetch(`/api/notes/${id}`, {
+            let response = await fetch(`https://notepad-be.herokuapp.com/api/notes/${id}`, {
                 method: 'GET',
                  headers: {
                    'Content-Type':'application/json',
@@ -47,7 +47,7 @@ const NotePage = (props) => {
     }
 
     let createNote = async () => {
-        let response = await fetch(`/api/notes/`, {
+        let response = await fetch(`https://notepad-be.herokuapp.com/api/notes/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ const NotePage = (props) => {
     }
 
     let updateNote = async () => {
-        let response = await fetch(`/api/notes/${id}/`, {
+        let response = await fetch(`https://notepad-be.herokuapp.com/api/notes/${id}/`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ const NotePage = (props) => {
     }
 
     let deleteNote = async () => {
-        let response = await fetch(`/api/notes/${id}/`, {
+        let response = await fetch(`https://notepad-be.herokuapp.com/api/notes/${id}/`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

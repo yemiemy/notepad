@@ -41,7 +41,7 @@ const NotePage = (props) => {
             console.log(code, response)
             alert("Oops, you do not have access to perform that action.")
         }else{
-            console.log(code, response)
+            //console.log(code, response)
         }
         navigate('/')
     }

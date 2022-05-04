@@ -6,14 +6,13 @@ import { ReactComponent as ArrowLeft } from '../assets/arrow-left.svg'
 const NotePage = (props) => {
     let navigate = useNavigate()
     let { id } = useParams();
-    let [note, setNote] = useState({})
-    // let note = notes.find(note => note.id === Number(id))
+    let [note, setNote] = useState(null)
 
     useEffect(() => {
         let getNote = async () => {
             if (id === 'new') return
     
-            let response = await fetch(`http://localhost:8000/notes/${id}`)
+            let response = await fetch(`/api/notes/${id}`)
             let data = await response.json()
             setNote(data)
         }
@@ -21,7 +20,7 @@ const NotePage = (props) => {
     }, [id])
 
     let createNote = async () => {
-        await fetch(`http://localhost:8000/notes`, {
+        await fetch(`/api/notes/create/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -31,7 +30,7 @@ const NotePage = (props) => {
     }
 
     let updateNote = async () => {
-        await fetch(`http://localhost:8000/notes/${id}`, {
+        await fetch(`/api/notes/${id}/update/`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -41,7 +40,7 @@ const NotePage = (props) => {
     }
 
     let deleteNote = async () => {
-        await fetch(`http://localhost:8000/notes/${id}`, {
+        await fetch(`/api/notes/${id}/delete/`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -76,7 +75,7 @@ const NotePage = (props) => {
                 }
             </div>
 
-            <textarea onChange={(e) => {setNote({...note, 'body':e.target.value})}} value={note.body}>
+            <textarea onChange={(e) => {setNote({...note, 'body':e.target.value})}} value={note?.body}>
 
             </textarea>
         </div>

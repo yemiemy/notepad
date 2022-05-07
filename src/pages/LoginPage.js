@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "../api/axios";
 import useAuth from "../hooks/useAuth";
 
-const LOGIN_URL = "/auth/token/login/";
+const LOGIN_URL = "/auth/jwt/create/";
 
 const LoginPage = () => {
   const { setAuth } = useAuth()
@@ -42,17 +42,16 @@ const LoginPage = () => {
         );
         // console.log(response.data);
         // console.log(JSON.stringify(response));
-        const auth_token = response?.data?.auth_token
-        sessionStorage.setItem("auth", JSON.stringify({user, auth_token}))
-        setAuth({user, auth_token})
+        const auth_token = response?.data?.access
+        const refresh = response?.data?.refresh
+        setAuth({user, auth_token, refresh})
         // clear input fields
         setUser("");
         setPassword("");
         navigate(from, { replace: true })
     } catch (err) {
         if (!err?.response) {
-          console.log(err);
-          setErrMsg("No Server Response");
+            setErrMsg("No Server Response");
         } else if (err.response?.status === 400) {
             console.log(err.response?.status, err.response)
             setErrMsg("Invalid username or password");

@@ -5,12 +5,11 @@ const AuthContext = createContext({})
 
 export const AuthProvider = ({ children }) => {
     
-    const [auth, setAuth] = useState(() => sessionStorage.getItem("auth") ? JSON.parse(sessionStorage.getItem("auth")) : {})
+    const [auth, setAuth] = useState({})
     const navigate = useNavigate()
 
     const logOutUser = () => {
         setAuth({})
-        sessionStorage.removeItem("auth")
         navigate('/login')
     }
 

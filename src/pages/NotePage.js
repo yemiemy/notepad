@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import axios from '../api/axios';
 import { ReactComponent as ArrowLeft } from '../assets/arrow-left.svg'
 import useAuth from '../hooks/useAuth';
-// import useAxiosPrivate from '../hooks/useAxiosPrivate';
+import useAxiosPrivate from '../hooks/useAxiosPrivate';
 
 const NotePage = (props) => {
     const navigate = useNavigate()
@@ -16,11 +16,12 @@ const NotePage = (props) => {
     const { auth } = useAuth()
     const GET_NOTE_URL = `/api/notes/${id}/`
     const CREATE_NOTES_URL = '/api/notes/'
+    const axiosPrivate = useAxiosPrivate()
 
     const config = {
         headers:{
           'Content-Type':'application/json',
-          'Authorization':'Token ' + String(auth?.auth_token)
+          'Authorization':'Bearer ' + String(auth?.auth_token)
         }
     };
 
@@ -31,7 +32,7 @@ const NotePage = (props) => {
     let getNote = async () => {
         if (id === 'new') return
         try {
-            let response = await axios.get(GET_NOTE_URL, config)
+            let response = await axiosPrivate.get(GET_NOTE_URL, config)
             setNote(response.data)
             setErrMsg('')
         } catch (err){
@@ -59,7 +60,7 @@ const NotePage = (props) => {
 
     let createNote = async () => {
         try {
-            await axios.post(CREATE_NOTES_URL, JSON.stringify({...note}), config)
+            await axiosPrivate.post(CREATE_NOTES_URL, JSON.stringify({...note}), config)
             setErrMsg('')
         } catch (err) {
             handleErrorCode(err?.response.status, err?.response)
@@ -68,7 +69,7 @@ const NotePage = (props) => {
 
     let updateNote = async () => {
         try {
-            await axios.put(GET_NOTE_URL, JSON.stringify({...note, 'updated': new Date()}), config)
+            await axiosPrivate.put(GET_NOTE_URL, JSON.stringify({...note, 'updated': new Date()}), config)
             setErrMsg('')
         } catch (err) {
             handleErrorCode(err?.response.status, err?.response)
@@ -77,7 +78,7 @@ const NotePage = (props) => {
 
     let deleteNote = async () => {
         try {
-            await axios.delete(GET_NOTE_URL, config)
+            await axiosPrivate.delete(GET_NOTE_URL, config)
             setErrMsg('')
             navigate('/')
         } catch (err) {

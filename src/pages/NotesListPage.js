@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import ListItem from '../components/ListItem'
 import AddButton from '../components/AddButton'
 import useAuth from '../hooks/useAuth'
-// import useAxiosPrivate from '../hooks/useAxiosPrivate'
+import useAxiosPrivate from '../hooks/useAxiosPrivate'
 import { useLocation, useNavigate } from 'react-router-dom'
 import axios from '../api/axios'
 
@@ -15,6 +15,7 @@ const NotesListPage = () => {
   const errRef = useRef()
   const navigate = useNavigate()
   const location = useLocation()
+  const axiosPrivate = useAxiosPrivate()
 
   useEffect(() => {
     let isMounted = true
@@ -25,10 +26,10 @@ const NotesListPage = () => {
         const config = {
           headers:{
             'Content-Type':'application/json',
-            'Authorization':'Token ' + String(auth?.auth_token)
+            'Authorization':'Bearer ' + String(auth?.auth_token)
           }
         };
-        let response = await axios.get(NOTES_URL, config)
+        let response = await axiosPrivate.get(NOTES_URL, config)
         isMounted && setNotes(response.data)
         setErrMsg('')
       } catch (err){

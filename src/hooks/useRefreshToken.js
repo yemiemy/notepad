@@ -9,7 +9,7 @@ const useRefreshToken = () => {
     const refresh = async () => {
         const response = await axios.post(
             REFRESH_URL,
-            JSON.stringify({ 'refresh': auth?.refresh}),
+            JSON.stringify({ 'refresh': auth.refresh}),
             {
                 headers: {
                     "Content-Type": "application/json",
@@ -17,9 +17,9 @@ const useRefreshToken = () => {
             }
         );
         setAuth(prev => {
-            console.log(JSON.stringify(prev))
-            console.log(response?.data?.access);
-            return { ...prev, auth_token: response?.data?.access, refresh: response?.data?.refresh}
+            // console.log(JSON.stringify(prev))
+            // console.log(response.data);
+            return { ...prev, 'auth_token': response?.data?.access}
         })
         return response?.data?.access
     }

@@ -1,15 +1,15 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
-import AuthContext from '../context/AuthContext'
+import useAuth from '../hooks/useAuth'
 
 const Header = () => {
-  let {logOutUser, user} = useContext(AuthContext)
+  let {auth, logOutUser} = useAuth()
 
   return (
     <div className='app-header'>
-      {user && <h1>Hello {user}<br/></h1> }
+      {auth?.user && <h1>Hello {auth?.user}<br/></h1> }
       <h3>Notes List</h3>
-      {user ? (
+      {auth?.user ? (
             <p onClick={logOutUser} style={{cursor: "pointer"}}>Logout</p>
         ): <><Link to="/register">Create account</Link></> }
     </div>

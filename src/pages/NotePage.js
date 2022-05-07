@@ -1,92 +1,92 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react'
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom'
+import axios from '../api/axios';
 import { ReactComponent as ArrowLeft } from '../assets/arrow-left.svg'
-import AuthContext from '../context/AuthContext';
+import useAuth from '../hooks/useAuth';
+// import useAxiosPrivate from '../hooks/useAxiosPrivate';
 
 const NotePage = (props) => {
-    let navigate = useNavigate()
-    let { id } = useParams();
-    let [note, setNote] = useState(null)
-    let { authTokens, logOutUser } = useContext(AuthContext)
+    const navigate = useNavigate()
+    const location = useLocation()
+    const { id } = useParams();
+    const [note, setNote] = useState(null)
+    const [errMsg, setErrMsg] = useState("")
+    const errRef = useRef()
+    const { auth } = useAuth()
+    const GET_NOTE_URL = `/api/notes/${id}/`
+    const CREATE_NOTES_URL = '/api/notes/'
+
+    const config = {
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':'Token ' + String(auth?.auth_token)
+        }
+    };
 
     useEffect(() => {
-        let getNote = async () => {
-            if (id === 'new') return
-    
-            let response = await fetch(`https://notepad-be.herokuapp.com/api/notes/${id}`, {
-                method: 'GET',
-                 headers: {
-                   'Content-Type':'application/json',
-                   'Authorization':'Token ' + String(authTokens?.auth_token)
-                 }
-            })
-            let data = await response.json()
-            if (response.status === 200){
-                setNote(data)
-            }else{
-                handleErrorCode(response.status, response)
-            }
-        }
         getNote()
-    }, [id, logOutUser, authTokens])
+    }, [])
+
+    let getNote = async () => {
+        if (id === 'new') return
+        try {
+            let response = await axios.get(GET_NOTE_URL, config)
+            setNote(response.data)
+            setErrMsg('')
+        } catch (err){
+            handleErrorCode(err?.response?.status, err?.response)
+        }
+    }
 
     let handleErrorCode = (code, response) => {
         if (code === 401){
-            logOutUser()
+            navigate('/login', {state:{from: location}, replace:true})
+            // logOutUser()
         }else if (code === 400){
-            console.log(response.status, response)
-            alert("Something went wrong, please try again.")
+            setErrMsg("Something went wrong, please try again.")
         }else if (code=== 403){
-            console.log(code, response)
-            alert("Oops, you do not have access to perform that action.")
+            setErrMsg("Oops, you do not have access to perform that action.")
+        }else if (code=== 404){
+            setErrMsg("Page not found")
         }else{
-            //console.log(code, response)
+            console.log(code, response)
+            setErrMsg("An error occured.")
         }
+        errRef?.current?.focus()
         navigate('/')
     }
 
     let createNote = async () => {
-        let response = await fetch(`https://notepad-be.herokuapp.com/api/notes/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization':'Token ' + String(authTokens?.auth_token)
-            },
-            body: JSON.stringify({...note})
-        })
-
-        handleErrorCode(response.status, response)
+        try {
+            await axios.post(CREATE_NOTES_URL, JSON.stringify({...note}), config)
+            setErrMsg('')
+        } catch (err) {
+            handleErrorCode(err?.response.status, err?.response)
+        }
     }
 
     let updateNote = async () => {
-        let response = await fetch(`https://notepad-be.herokuapp.com/api/notes/${id}/`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization':'Token ' + String(authTokens?.auth_token)
-            },
-            body: JSON.stringify({...note, 'updated': new Date()})
-        })
-        
-        handleErrorCode(response.status, response)
+        try {
+            await axios.put(GET_NOTE_URL, JSON.stringify({...note, 'updated': new Date()}), config)
+            setErrMsg('')
+        } catch (err) {
+            handleErrorCode(err?.response.status, err?.response)
+        }        
     }
 
     let deleteNote = async () => {
-        let response = await fetch(`https://notepad-be.herokuapp.com/api/notes/${id}/`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization':'Token ' + String(authTokens?.auth_token)
-            },
-            body: JSON.stringify(note)
-        })
-        handleErrorCode(response.status, response)
-        navigate('/')
+        try {
+            await axios.delete(GET_NOTE_URL, config)
+            setErrMsg('')
+            navigate('/')
+        } catch (err) {
+            handleErrorCode(err?.response.status, err?.response)
+        }
     }
 
     let handleSubmit = () => {
-        if (id !== 'new' && !note.body){
+        if (id !== 'new' && !note?.body){
             deleteNote()
         } else if (id !== 'new'){
             updateNote()
@@ -105,11 +105,17 @@ const NotePage = (props) => {
                     </Link>
                 </h3>
                 {
-                    id==='new' ? <button onClick={handleSubmit}>Done</button>
+                    id==='new' ? <button onClick={handleSubmit} style= {{cursor: 'pointer'}}>Done</button>
                     : <button onClick={deleteNote}>Delete</button>
                 }
             </div>
-
+            <p
+                ref={errRef}
+                className={errMsg ? "errmsg" : "offscreen"}
+                aria-live="assertive"
+            >
+                {errMsg}
+            </p>
             <textarea onChange={(e) => {setNote({...note, 'body':e.target.value})}} value={note?.body}>
 
             </textarea>

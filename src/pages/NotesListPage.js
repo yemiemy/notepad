@@ -1,31 +1,57 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import ListItem from '../components/ListItem'
 import AddButton from '../components/AddButton'
-import AuthContext from '../context/AuthContext'
+import useAuth from '../hooks/useAuth'
+// import useAxiosPrivate from '../hooks/useAxiosPrivate'
+import { useLocation, useNavigate } from 'react-router-dom'
+import axios from '../api/axios'
+
+const NOTES_URL = '/api/notes/'
 
 const NotesListPage = () => {
-  let [notes, setNotes] = useState([])
-  let {authTokens, logOutUser} = useContext(AuthContext)
+  const [notes, setNotes] = useState([])
+  const [errMsg, setErrMsg] = useState("");
+  const { auth } = useAuth()
+  const errRef = useRef()
+  const navigate = useNavigate()
+  const location = useLocation()
 
   useEffect(() => {
+    let isMounted = true
+    const controller = new AbortController()
+
     let getNotes = async () => {
-      let response = await fetch('https://notepad-be.herokuapp.com/api/notes/', {
-        method: 'GET',
-         headers: {
-           'Content-Type':'application/json',
-           'Authorization':'Token ' + String(authTokens?.auth_token)
-         }
-      })
-      let data = await response.json()
-      if (response.status === 200){
-        setNotes(data)
-      }else if (response.statusText === 'Unauthorized'){
-        logOutUser()
+      try {
+        const config = {
+          headers:{
+            'Content-Type':'application/json',
+            'Authorization':'Token ' + String(auth?.auth_token)
+          }
+        };
+        let response = await axios.get(NOTES_URL, config)
+        isMounted && setNotes(response.data)
+        setErrMsg('')
+      } catch (err){
+        if (!err?.response){
+          setErrMsg("No Server Response")
+        }else if (err.response?.status === 401){
+          setErrMsg("Unauthroised")
+          navigate('/login', {state:{from: location}, replace:true})
+          // logOutUser()
+        } else {
+          console.log(err.response);
+          setErrMsg("An error occured.")
+        }
+        errRef?.current?.focus();
       }
-      
     }
     getNotes()
-  }, [authTokens, logOutUser])
+
+    return () => {
+      isMounted = false
+      controller.abort()
+    }
+  }, [auth, location, navigate])
 
   
   return (
@@ -34,6 +60,13 @@ const NotesListPage = () => {
         <h2 className='notes-title'>&#9782; Notes</h2>
         <p className='notes-count'>{notes.length}</p>
       </div>
+      <p
+        ref={errRef}
+        className={errMsg ? "errmsg" : "offscreen"}
+        aria-live="assertive"
+      >
+        {errMsg}
+      </p>
       <div className='notes-list'>
           {
               notes.map((note, index) => {

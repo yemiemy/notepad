@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom'
-import axios from '../api/axios';
+// import axios from '../api/axios';
 import { ReactComponent as ArrowLeft } from '../assets/arrow-left.svg'
-import useAuth from '../hooks/useAuth';
+// import useAuth from '../hooks/useAuth';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
 
 const NotePage = (props) => {
@@ -13,17 +13,17 @@ const NotePage = (props) => {
     const [note, setNote] = useState(null)
     const [errMsg, setErrMsg] = useState("")
     const errRef = useRef()
-    const { auth } = useAuth()
+    // const { auth } = useAuth()
     const GET_NOTE_URL = `/api/notes/${id}/`
     const CREATE_NOTES_URL = '/api/notes/'
     const axiosPrivate = useAxiosPrivate()
 
-    const config = {
-        headers:{
-          'Content-Type':'application/json',
-          'Authorization':'Bearer ' + String(auth?.auth_token)
-        }
-    };
+    // const config = {
+        // headers:{
+        //   'Content-Type':'application/json',
+        //   'Authorization':'Bearer ' + String(auth?.auth_token)
+        // }
+    // };
 
     useEffect(() => {
         getNote()
@@ -32,7 +32,7 @@ const NotePage = (props) => {
     let getNote = async () => {
         if (id === 'new') return
         try {
-            let response = await axiosPrivate.get(GET_NOTE_URL, config)
+            let response = await axiosPrivate.get(GET_NOTE_URL)
             setNote(response.data)
             setErrMsg('')
         } catch (err){
@@ -60,7 +60,7 @@ const NotePage = (props) => {
 
     let createNote = async () => {
         try {
-            await axiosPrivate.post(CREATE_NOTES_URL, JSON.stringify({...note}), config)
+            await axiosPrivate.post(CREATE_NOTES_URL, JSON.stringify({...note}))
             setErrMsg('')
         } catch (err) {
             handleErrorCode(err?.response.status, err?.response)
@@ -69,7 +69,7 @@ const NotePage = (props) => {
 
     let updateNote = async () => {
         try {
-            await axiosPrivate.put(GET_NOTE_URL, JSON.stringify({...note, 'updated': new Date()}), config)
+            await axiosPrivate.put(GET_NOTE_URL, JSON.stringify({...note, 'updated': new Date()}))
             setErrMsg('')
         } catch (err) {
             handleErrorCode(err?.response.status, err?.response)
@@ -78,7 +78,7 @@ const NotePage = (props) => {
 
     let deleteNote = async () => {
         try {
-            await axiosPrivate.delete(GET_NOTE_URL, config)
+            await axiosPrivate.delete(GET_NOTE_URL)
             setErrMsg('')
             navigate('/')
         } catch (err) {
@@ -117,7 +117,7 @@ const NotePage = (props) => {
             >
                 {errMsg}
             </p>
-            <textarea onChange={(e) => {setNote({...note, 'body':e.target.value})}} value={note?.body}>
+            <textarea onChange={(e) => {setNote({...note, 'body':e.target.value})}} value={note?.body} placeholder="Type something here...">
 
             </textarea>
         </div>

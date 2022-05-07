@@ -4,7 +4,7 @@ import AddButton from '../components/AddButton'
 import useAuth from '../hooks/useAuth'
 import useAxiosPrivate from '../hooks/useAxiosPrivate'
 import { useLocation, useNavigate } from 'react-router-dom'
-import axios from '../api/axios'
+// import axios from '../api/axios'
 
 const NOTES_URL = '/api/notes/'
 
@@ -18,23 +18,26 @@ const NotesListPage = () => {
   const axiosPrivate = useAxiosPrivate()
 
   useEffect(() => {
+    // console.log("NoteList GET EFFECT");
     let isMounted = true
     const controller = new AbortController()
 
-    let getNotes = async () => {
+    const getNotes = async () => {
       try {
         const config = {
-          headers:{
-            'Content-Type':'application/json',
-            'Authorization':'Bearer ' + String(auth?.auth_token)
-          }
+          signal: controller.signal,
+          // headers:{
+          //   'Content-Type':'application/json',
+          //   'Authorization':'Bearer ' + String(auth?.auth_token)
+          // }
         };
-        let response = await axiosPrivate.get(NOTES_URL, config)
+        const response = await axiosPrivate.get(NOTES_URL, config)
         isMounted && setNotes(response.data)
+        // console.log("SET NOTES", response.data);
         setErrMsg('')
       } catch (err){
         if (!err?.response){
-          setErrMsg("No Server Response")
+          // setErrMsg("No Server Response")
         }else if (err.response?.status === 401){
           setErrMsg("Unauthroised")
           navigate('/login', {state:{from: location}, replace:true})
@@ -52,7 +55,7 @@ const NotesListPage = () => {
       isMounted = false
       controller.abort()
     }
-  }, [auth, location, navigate])
+  }, [auth, axiosPrivate, location, navigate])
 
   
   return (
